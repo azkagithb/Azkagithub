@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Little Star</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+    }
+    canvas {
+      display: block;
+    }
+    #text {
+      position: absolute;
+      top: 20px;
+      width: 100%;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      font-size: 36px;
+      color: white;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="text">LITTLE STAR</div>
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Bintang utama
+    const mainStar = {
+      x: canvas.width / 2,
+      y: canvas.height / 2 + 50,
+      radius: 50,
+      color: "yellow",
+    };
+
+    // Bintang kecil
+    const smallStars = [];
+
+    // Gambar bintang lima
+    function drawStar(ctx, x, y, radius, color) {
+      ctx.beginPath();
+      ctx.fillStyle = color;
+      for (let i = 0; i < 10; i++) {
+        const angle = Math.PI / 5 * i; // 36 derajat per titik
+        const r = i % 2 === 0 ? radius : radius / 2;
+        const xPoint = x + r * Math.sin(angle);
+        const yPoint = y - r * Math.cos(angle);
+        ctx.lineTo(xPoint, yPoint);
+      }
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Tambahkan bintang kecil
+    function addSmallStars(x, y, count) {
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * 2 * Math.PI; // Sudut acak
+        const distance = Math.random() * 100 + 80; // Jarak acak
+        const radius = Math.random() * 5 + 5; // Ukuran acak
+        const xStar = x + distance * Math.cos(angle);
+        const yStar = y + distance * Math.sin(angle);
+        smallStars.push({ x: xStar, y: yStar, radius, color: "yellow" });
+      }
+    }
+
+    // Perbarui dan gambar semua elemen
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Gambar bintang utama
+      drawStar(ctx, mainStar.x, mainStar.y, mainStar.radius, mainStar.color);
+
+      // Gambar bintang kecil
+      smallStars.forEach((star) => {
+        drawStar(ctx, star.x, star.y, star.radius, star.color);
+      });
+
+      requestAnimationFrame(draw);
+    }
+
+    // Tambahkan event listener untuk klik
+    canvas.addEventListener("click", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      // Periksa jika bintang utama diklik
+      const dist = Math.sqrt((mouseX - mainStar.x) ** 2 + (mouseY - mainStar.y) ** 2);
+      if (dist <= mainStar.radius) {
+        addSmallStars(mainStar.x, mainStar.y, 10); // Tambahkan 10 bintang kecil
+      }
+    });
+
+    // Jalankan animasi
+    draw();
+  </script>
+</body>
+</html>
